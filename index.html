@@ -260,8 +260,7 @@ ecngApplePay = {
             var session = new ApplePaySession(3, paymentRequest);
 
             console.log(session);
-            console.log("ApplePaySession merchantIdentifier "+session.merchantIdentifier);
-            console.log("ApplePaySession merchantIdentifier2 "+paymentRequest.merchantIdentifier);
+d
             // Setup handler for validation the merchant session.
             
 
@@ -452,7 +451,7 @@ ecngApplePay = {
 
     // Get the merchant identifier from the page meta tags.
     var merchantIdentifier = ecngApplePay.applePay.getMerchantIdentifier();
-
+    console.log("merchantIdentifier: " + merchantIdentifier);
     if (!merchantIdentifier) {
         console.log("No Apple Pay merchant certificate is configured.");
         ecngApplePay.applePay.showError("No Apple Pay merchant certificate is configured.");
