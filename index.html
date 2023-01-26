@@ -287,29 +287,6 @@ ecngApplePay = {
     }
 
 
-            // session.onvalidatemerchant = function (event) {
-  
-            //     // Create the payload.
-            //     var data = {
-            //         validationUrl: event.validationURL
-            //     };
-
-            //     var headers = {};
-
-            //     // Post the payload to the server to validate the
-            //     // merchant session using the merchant certificate.
-            //     $.ajax({
-            //         url: "https://ecng-merchants.azurewebsites.net/Home/applepay/validate",
-            //         method: "POST",
-            //         contentType: "application/json; charset=utf-8",
-            //         data: JSON.stringify(data),
-            //         headers: headers
-            //     }).then(function (merchantSession) {
-            //         // Complete validation by passing the merchant session to the Apple Pay session.
-            //         session.completeMerchantValidation(merchantSession);
-            //     }); 
-            // };
-
             // Setup handler for shipping method selection.
             session.onshippingmethodselected = event => {
                 // Define ApplePayShippingMethodUpdate based on the selected shipping method.
@@ -347,19 +324,18 @@ ecngApplePay = {
                     // var paymentData = token.paymentData;
                     // var paymentMethod = token.paymentMethod;
                     // var transactionIdentifier = token.transactionIdentifier;
-                    console.log("On Payment Authorized token: " + token);
                     
                     var authorizationResult = {
                         status: ApplePaySession.STATUS_SUCCESS,
                         errors: []
                     };
 
-                    session.completePayment(authorizationResult);
-                    console.log("On Payment Authorized completePayment");
-                    ecngApplePay.applePay.processPayment(token);
-                    console.log("On Payment Authorized processPayment");
+                    session.completePayment(authorizationResult);                    
+                    ecngApplePay.applePay.processPayment(token);                    
                 };
 
+                console.log("On Payment Authorized try complete ");
+                console.log(session.onpaymentauthorized);   
                 // Start the session to display the Apple Pay sheet.
                 session.begin(); 
                 console.log("On Payment Authorized session begin");
