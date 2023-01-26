@@ -259,7 +259,7 @@ ecngApplePay = {
             console.log("ApplePaySession request "+paymentRequest.total.amount);
             var session = new ApplePaySession(3, paymentRequest);
 
-            console.log("ApplePaySession "+JSON.stringify(session, null, 2));
+            console.log(session);
             console.log("ApplePaySession merchantIdentifier "+session.merchantIdentifier);
             console.log("ApplePaySession merchantIdentifier2 "+paymentRequest.merchantIdentifier);
             // Setup handler for validation the merchant session.
