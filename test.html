@@ -242,26 +242,15 @@ ecngApplePay = {
             
    
             // Merchant Validation
-            session.onvalidatemerchant = function (event) {
-                var promise = performValidation(event.validationURL);
-                promise.then(function (merchantSession) {
+            console.log("onvalidatemerchant validationURL "+event.validationURL)
+            fetch(event.validationURL)                
+                .then(res => res.json()) // Parse response as JSON.        
+                .then(merchantSession => {
                     session.completeMerchantValidation(merchantSession);
-                }); 
-                console.log("Merchant Validation : " + JSON.stringify(event));
-            }
-
-            // session.onvalidatemerchant = event => {
-            // // Call your own server to request a new merchant session.
-            // console.log("onvalidatemerchant validationURL "+event.validationURL)
-            // fetch(event.validationURL)                
-            // .then(res => res.json()) // Parse response as JSON.        
-            // .then(merchantSession => {
-            //     session.completeMerchantValidation(merchantSession);
-            // })
-            // .catch(err => {
-            // console.error("Error fetching merchant session", err);
-            // });        
-            // };
+                })
+                .catch(err => {
+                    console.error("Error fetching merchant session", err);
+                });
         
 
             // Setup handler for shipping method selection.
@@ -411,18 +400,7 @@ ecngApplePay = {
         }
     }
 };
-function performValidation(valURL) {
-  return new Promise(function(resolve, reject) {
-    var xhr = new XMLHttpRequest();
-    xhr.onload = function() {
-          var data = JSON.parse(this.responseText);
-          resolve(data);
-    };
-    xhr.onerror = reject;
-    xhr.open('GET', 'apple_pay_do.php?u=' + valURL);
-    xhr.send();
-  });
-}
+
 (function () {
 
     // Get the merchant identifier from the page meta tags.
