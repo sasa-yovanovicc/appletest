@@ -272,7 +272,7 @@ ecngApplePay = {
     */
    
     try {
-        // console.log("onvalidatemerchant try");
+        console.log("onvalidatemerchant try");
         session.onvalidatemerchant = event => {
         // Call your own server to request a new merchant session.
         console.log("onvalidatemerchant validatioURL "+event.validationURL)
@@ -286,6 +286,7 @@ ecngApplePay = {
         //    console.error("Error fetching merchant session", err);
         // });
         };    
+        console.log("onvalidatemerchant try complete");
     }
     catch(e) {
         console.log("onvalidatemerchant error "+e);
@@ -321,21 +322,25 @@ ecngApplePay = {
                 // No updates or errors are needed, pass an empty object. 
                 const update = {};
                 session.completeShippingMethodSelection(update);
+                console.log("onshippingmethodselected");
             };
 
             session.onshippingcontactselected = event => {
                 // Define ApplePayShippingContactUpdate based on the selected shipping contact.
                 const update = {};
                 session.completeShippingContactSelection(update);
+                console.log("onshippingcontactselected");
             };
 
             session.onshippingcontactselected = event => {
                 // Define ApplePayShippingContactUpdate based on the selected shipping contact.
                 const update = {};
                 session.completeShippingContactSelection(update);
+                console.log("onshippingcontactselected");
             };            
             
             try{
+                console.log("On Payment Authorized try")
                 // Setup handler to receive the token when payment is authorized.
                 session.onpaymentauthorized = function (event) {
 
@@ -345,6 +350,7 @@ ecngApplePay = {
                     // var paymentData = token.paymentData;
                     // var paymentMethod = token.paymentMethod;
                     // var transactionIdentifier = token.transactionIdentifier;
+                    console.log("On Payment Authorized token: " + token)
                     
                     var authorizationResult = {
                         status: ApplePaySession.STATUS_SUCCESS,
@@ -352,12 +358,14 @@ ecngApplePay = {
                     };
 
                     session.completePayment(authorizationResult);
-
+                    console.log("On Payment Authorized completePayment");
                     ecngApplePay.applePay.processPayment(token);
+                    console.log("On Payment Authorized processPayment");
                 };
 
                 // Start the session to display the Apple Pay sheet.
                 session.begin(); 
+                console.log("On Payment Authorized session begin");
 
             }
             catch(error){
@@ -366,8 +374,8 @@ ecngApplePay = {
 
             try{
                 session.oncancel = function(event) {
-                    console.log("starting session.oncancel" + JSON.stringify(event));
-                    console.log(session);
+                    console.log("starting session.oncancel : " + JSON.stringify(event));
+                    console.log(JSON.stringify(session));
 
                     // Payment cancelled by WebKit
                 };
