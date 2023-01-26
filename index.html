@@ -107,6 +107,7 @@ ecngApplePay = {
         console.log("completeMerchantValidation complete");
     };
     */
+   /*
     try {
         session.onvalidatemerchant = event => {
         // Call your own server to request a new merchant session.
@@ -117,17 +118,16 @@ ecngApplePay = {
             console.log("Merchant session: " + merchantSession);
             session.completeMerchantValidation(merchantSession);
         });
-        /*.catch(err => {
-            console.error("Error fetching merchant session", err);
-        });
-*/
+        // .catch(err => {
+        //    console.error("Error fetching merchant session", err);
+        // });
         };    
     }
     catch(e) {
         console.log("onvalidatemerchant error "+e);
     }
+*/
 
-/*
             session.onvalidatemerchant = function (event) {
   
                 // Create the payload.
@@ -140,7 +140,7 @@ ecngApplePay = {
                 // Post the payload to the server to validate the
                 // merchant session using the merchant certificate.
                 $.ajax({
-                    url: "Home/ValidateAppleMerchant",
+                    url: "https://ecng-merchants.azurewebsites.net/Home/applepay/validate",
                     method: "POST",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(data),
@@ -150,7 +150,7 @@ ecngApplePay = {
                     session.completeMerchantValidation(merchantSession);
                 }); 
             };
-*/
+
             // Setup handler for shipping method selection.
             session.onshippingmethodselected = event => {
                 // Define ApplePayShippingMethodUpdate based on the selected shipping method.
