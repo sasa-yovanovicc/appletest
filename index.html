@@ -166,7 +166,7 @@
 </style>
     </head>
     <body>
-        <h1>Test </h1>
+        <h1>Test 8</h1>
 <form action="Charge" method="post" id="applepay-form">
     <input type="hidden" for="RedirectUrl" />
     <input type="hidden" for="PaymentRequest" />
@@ -257,7 +257,7 @@ ecngApplePay = {
             ];*/
 
             // Create the Apple Pay session.
-            var session = new ApplePaySession(3, paymentRequest);
+            var session = new ApplePaySession(10, paymentRequest);
 
             console.log(session);
 
@@ -267,15 +267,15 @@ ecngApplePay = {
     
             session.onvalidatemerchant = event => {
             // Call your own server to request a new merchant session.
-                console.log("onvalidatemerchant validationURL "+event.validationURL)
-                fetch(event.validationURL)                
-                .then(res => res.json()) // Parse response as JSON.        
-                .then(merchantSession => {
-                    session.completeMerchantValidation(merchantSession);
-                })
-                .catch(err => {
-                console.error("Error fetching merchant session", err);
-                });        
+            console.log("onvalidatemerchant validationURL "+event.validationURL)
+            fetch(event.validationURL)                
+            .then(res => res.json()) // Parse response as JSON.        
+            .then(merchantSession => {
+                session.completeMerchantValidation(merchantSession);
+            })
+            .catch(err => {
+            console.error("Error fetching merchant session", err);
+            });        
             };
         
 
@@ -306,21 +306,15 @@ ecngApplePay = {
             };            
             
                 
-            session.onpaymentauthorized = event => {
-                // Define ApplePayPaymentAuthorizationResult
-                const result = {
-                    "status": ApplePaySession.STATUS_SUCCESS,
-                    errors: []
-                };
-                var token = event.payment.token.paymentData;
-                session.completePayment(result);
-                ecngApplePay.applePay.processPayment(token); 
-            };
-
-            // session.oncancel = function(event) {              
-            //     // Payment cancelled by WebKit
-            // };            
-            /*
+            // session.onpaymentauthorized = event => {
+            //     // Define ApplePayPaymentAuthorizationResult
+            //     const result = {
+            //         "status": ApplePaySession.STATUS_SUCCESS
+            //     };
+            //     var token = event.payment.token.paymentData;
+            //     session.completePayment(result);
+            //     ecngApplePay.applePay.processPayment(token); 
+            // };
             try{
                 console.log("On Payment Authorized try")
                 // Setup handler to receive the token when payment is authorized.
@@ -352,7 +346,7 @@ ecngApplePay = {
             catch(error){
                 console.log("On Payment Authorized Error: " + error)
             }
-*/
+
             // try{
             //     session.oncancel = function(event) {
             //         console.log("starting session.oncancel : " + JSON.stringify(event));
