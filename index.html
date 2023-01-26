@@ -220,145 +220,161 @@ ecngApplePay = {
 
         e.preventDefault(); 
 
-
+            // Create the Apple Pay payment request as appropriate.
+            var paymentRequest = {
+                applicationData: btoa("Custom application-specific data"),
+                countryCode: "IL",
+                currencyCode: "USD",
+                merchantCapabilities: [ "supports3DS" ],
+                supportedNetworks: [ "visa", "masterCard", "amex", "discover" ],
+                lineItems: [{ label: "Total", amount: "1.23" }],
+                total: { label: "Total", amount: "1.23", type: "final" }
+            };
 /*
-Copyright (C) 2016 Vantiv. All Rights Reserved.
-Adapted from EmporiumWeb:
-https://developer.apple.com/library/content/samplecode/EmporiumWeb/Introduction/Intro.html
- 
-Abstract:
-The main client-side JS. Handles displaying the Apple Pay button and requesting a payment.
-*/
-
-/**
-* This method is called when the page is loaded.
-* We use it to show the Apple Pay button as appropriate.
-* Here we're using the ApplePaySession.canMakePayments() method,
-* which performs a basic hardware check. 
-*
-* If we wanted more fine-grained control, we could use
-* ApplePaySession.canMakePaymentsWithActiveCards() instead.
-*/
-document.addEventListener('DOMContentLoaded', () => {
-	if (window.ApplePaySession) {
-		if (ApplePaySession.canMakePayments) {
-			showApplePayButton();
-		}
-	}
-});
-
-function showApplePayButton() {
-	HTMLCollection.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
-	const buttons = document.getElementsByClassName("apple-pay-button");
-	for (let button of buttons) {
-		button.className += " visible";
-	}
-}
+            var countryCode = "IL"";
+            var currencyCode = "USD";
+            var storeName = "Test ECNG";
 
 
-/**
-* Apple Pay Logic
-* Our entry point for Apple Pay interactions.
-* Triggered when the Apple Pay button is pressed
-*/
-function applePayButtonClicked() {
-	const paymentRequest = {
-		countryCode: 'US',
-		currencyCode: 'USD',
-		shippingMethods: [
-			{
-				label: 'Free Shipping',
-				amount: '0.00',
-				identifier: 'free',
-				detail: 'Delivers in five business days',
-			},
-			{
-				label: 'Express Shipping',
-				amount: '5.00',
-				identifier: 'express',
-				detail: 'Delivers in two business days',
-			},
-		],
+            var totalForCollection = {
+                label: storeName,
+                amount: subtotal
+            };
 
-		lineItems: [
-			{
-				label: 'Shipping',
-				amount: '0.00',
-			}
-		],
+            var lineItemsForCollection = [
+                { label: "Subtotal", amount: subtotal, type: "final" }
+            ];
 
-		total: {
-			label: 'Apple Pay Example',
-			amount: '8.99',
-		},
+            var totalForDelivery = {
+                label: storeName,
+                amount: deliveryTotal
+            };
 
-		supportedNetworks:[ 'amex', 'discover', 'masterCard', 'visa'],
-		merchantCapabilities: [ 'supports3DS' ],
+            var lineItemsForDelivery = [
+                { label: "Subtotal", amount: subtotal, type: "final" },
+                { label: "Delivery", amount: delivery, type: "final" }
+            ];*/
 
-		requiredShippingContactFields: [ 'postalAddress', 'email' ],
-	};
+            // Create the Apple Pay session.
+            console.log("ApplePaySession request "+paymentRequest.total.amount);
+            var session = new ApplePaySession(3, paymentRequest);
 
-	const session = new ApplePaySession(1, paymentRequest);
-	
-	/**
-	* Merchant Validation
-	* We call our merchant session endpoint, passing the URL to use
-	*/
-	session.onvalidatemerchant = (event) => {
-		console.log("Validate merchant");
-		const validationURL = event.validationURL;
-		getApplePaySession(event.validationURL).then(function(response) {
-  			console.log(response);
-  			session.completeMerchantValidation(response);
-		});
-	};
-
-	/**
-	* Shipping Method Selection
-	* If the user changes their chosen shipping method we need to recalculate
-	* the total price. We can use the shipping method identifier to determine
-	* which method was selected.
-	*/
-	session.onshippingmethodselected = (event) => {
-		const shippingCost = event.shippingMethod.identifier === 'free' ? '0.00' : '5.00';
-		const totalCost = event.shippingMethod.identifier === 'free' ? '8.99' : '13.99';
-
-		const lineItems = [
-			{
-				label: 'Shipping',
-				amount: shippingCost,
-			},
-		];
-
-		const total = {
-			label: 'Apple Pay Example',
-			amount: totalCost,
-		};
-
-		session.completeShippingMethodSelection(ApplePaySession.STATUS_SUCCESS, total, lineItems);
-	};
-
-	/**
-	* Payment Authorization
-	* Here you receive the encrypted payment data. You would then send it
-	* on to your payment provider for processing, and return an appropriate
-	* status in session.completePayment()
-	*/
-	session.onpaymentauthorized = (event) => {
-		// Send payment for processing...
-		const payment = event.payment;
-		
-		sendToLitle(payment);
-		// ...return a status and redirect to a confirmation page
-		session.completePayment(ApplePaySession.STATUS_SUCCESS);
-	}
-
-	// All our handlers are setup - start the Apple Pay payment
-	session.begin();
-}
+            // Setup handler for validation the merchant session.
+      /*      
+    session.onvalidatemerchant = async event => {
+        // Call your own server to request a new merchant session.
+        console.log("onvalidatemerchant");
+        const merchantSession = await validateMerchant();
+        console.log("onvalidatemerchant complete"");
+        session.completeMerchantValidation(merchantSession);
+        console.log("completeMerchantValidation complete");
+    };
+    */
+   
+    try {
+        conbsole.loh("onvalidatemerchant try");
+        session.onvalidatemerchant = event => {
+        // Call your own server to request a new merchant session.
+        console.log("onvalidatemerchant validatioURL "+event.validationURL)
+        fetch(event.validationURL)
+        .then(r => {res => r.json(); console.log("res "+res);}) // Parse response as JSON.
+        .then(merchantSession => {
+            console.log("Merchant session: " + merchantSession);
+            session.completeMerchantValidation(merchantSession);
+        });
+        // .catch(err => {
+        //    console.error("Error fetching merchant session", err);
+        // });
+        };    
+    }
+    catch(e) {
+        console.log("onvalidatemerchant error "+e);
+    }
 
 
+            // session.onvalidatemerchant = function (event) {
+  
+            //     // Create the payload.
+            //     var data = {
+            //         validationUrl: event.validationURL
+            //     };
 
+            //     var headers = {};
+
+            //     // Post the payload to the server to validate the
+            //     // merchant session using the merchant certificate.
+            //     $.ajax({
+            //         url: "https://ecng-merchants.azurewebsites.net/Home/applepay/validate",
+            //         method: "POST",
+            //         contentType: "application/json; charset=utf-8",
+            //         data: JSON.stringify(data),
+            //         headers: headers
+            //     }).then(function (merchantSession) {
+            //         // Complete validation by passing the merchant session to the Apple Pay session.
+            //         session.completeMerchantValidation(merchantSession);
+            //     }); 
+            // };
+
+            // Setup handler for shipping method selection.
+            session.onshippingmethodselected = event => {
+                // Define ApplePayShippingMethodUpdate based on the selected shipping method.
+                // No updates or errors are needed, pass an empty object. 
+                const update = {};
+                session.completeShippingMethodSelection(update);
+            };
+
+            session.onshippingcontactselected = event => {
+                // Define ApplePayShippingContactUpdate based on the selected shipping contact.
+                const update = {};
+                session.completeShippingContactSelection(update);
+            };
+
+            session.onshippingcontactselected = event => {
+                // Define ApplePayShippingContactUpdate based on the selected shipping contact.
+                const update = {};
+                session.completeShippingContactSelection(update);
+            };            
+            
+            try{
+                // Setup handler to receive the token when payment is authorized.
+                session.onpaymentauthorized = function (event) {
+
+                    // Get the payment data for use to capture funds from
+                    // the encrypted Apple Pay token in your server.
+                    var token = event.payment.token.paymentData;
+                    // var paymentData = token.paymentData;
+                    // var paymentMethod = token.paymentMethod;
+                    // var transactionIdentifier = token.transactionIdentifier;
+                    
+                    var authorizationResult = {
+                        status: ApplePaySession.STATUS_SUCCESS,
+                        errors: []
+                    };
+
+                    session.completePayment(authorizationResult);
+
+                    ecngApplePay.applePay.processPayment(token);
+                };
+
+                // Start the session to display the Apple Pay sheet.
+                session.begin(); 
+
+            }
+            catch(error){
+                console.log("On Payment Authorized Error: " + error)
+            }
+
+            try{
+                session.oncancel = function(event) {
+                    console.log("starting session.oncancel" + JSON.stringify(event));
+                    console.log(session);
+
+                    // Payment cancelled by WebKit
+                };
+            }
+            catch(error){
+                console.log("On Cancel Error: " + error)
+            }          
         },
         setupApplePay: function () {
             var merchantIdentifier = ecngApplePay.applePay.getMerchantIdentifier();
