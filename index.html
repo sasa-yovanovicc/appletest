@@ -275,10 +275,10 @@ ecngApplePay = {
         .then(merchantSession => {
             console.log("Merchant session: " + merchantSession);
             session.completeMerchantValidation(merchantSession);
+        })
+        .catch(err => {
+           console.error("Error fetching merchant session", err);
         });
-        // .catch(err => {
-        //    console.error("Error fetching merchant session", err);
-        // });
         console.log("onvalidatemerchant try fetch URL complete");
         };    
         console.log("onvalidatemerchant try complete");
