@@ -271,7 +271,7 @@ ecngApplePay = {
         console.log("completeMerchantValidation complete");
     };
     */
-   /*
+   
     try {
         session.onvalidatemerchant = event => {
         // Call your own server to request a new merchant session.
@@ -290,30 +290,30 @@ ecngApplePay = {
     catch(e) {
         console.log("onvalidatemerchant error "+e);
     }
-*/
 
-            session.onvalidatemerchant = function (event) {
+
+            // session.onvalidatemerchant = function (event) {
   
-                // Create the payload.
-                var data = {
-                    validationUrl: event.validationURL
-                };
+            //     // Create the payload.
+            //     var data = {
+            //         validationUrl: event.validationURL
+            //     };
 
-                var headers = {};
+            //     var headers = {};
 
-                // Post the payload to the server to validate the
-                // merchant session using the merchant certificate.
-                $.ajax({
-                    url: "https://ecng-merchants.azurewebsites.net/Home/applepay/validate",
-                    method: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(data),
-                    headers: headers
-                }).then(function (merchantSession) {
-                    // Complete validation by passing the merchant session to the Apple Pay session.
-                    session.completeMerchantValidation(merchantSession);
-                }); 
-            };
+            //     // Post the payload to the server to validate the
+            //     // merchant session using the merchant certificate.
+            //     $.ajax({
+            //         url: "https://ecng-merchants.azurewebsites.net/Home/applepay/validate",
+            //         method: "POST",
+            //         contentType: "application/json; charset=utf-8",
+            //         data: JSON.stringify(data),
+            //         headers: headers
+            //     }).then(function (merchantSession) {
+            //         // Complete validation by passing the merchant session to the Apple Pay session.
+            //         session.completeMerchantValidation(merchantSession);
+            //     }); 
+            // };
 
             // Setup handler for shipping method selection.
             session.onshippingmethodselected = event => {
