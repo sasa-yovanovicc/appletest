@@ -350,7 +350,7 @@ ecngApplePay = {
                     // var paymentData = token.paymentData;
                     // var paymentMethod = token.paymentMethod;
                     // var transactionIdentifier = token.transactionIdentifier;
-                    console.log("On Payment Authorized token: " + token)
+                    console.log("On Payment Authorized token: " + token);
                     
                     var authorizationResult = {
                         status: ApplePaySession.STATUS_SUCCESS,
@@ -375,7 +375,7 @@ ecngApplePay = {
             try{
                 session.oncancel = function(event) {
                     console.log("starting session.oncancel : " + JSON.stringify(event));
-                    console.log(JSON.stringify(session));
+                    console.log(session);
 
                     // Payment cancelled by WebKit
                 };
