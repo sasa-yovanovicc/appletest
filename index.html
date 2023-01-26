@@ -345,17 +345,17 @@ ecngApplePay = {
                 console.log("On Payment Authorized Error: " + error)
             }
 
-            try{
-                session.oncancel = function(event) {
-                    console.log("starting session.oncancel : " + JSON.stringify(event));
-                    console.log(session);
+            // try{
+            //     session.oncancel = function(event) {
+            //         console.log("starting session.oncancel : " + JSON.stringify(event));
+            //         console.log(session);
 
-                    // Payment cancelled by WebKit
-                };
-            }
-            catch(error){
-                console.log("On Cancel Error: " + error)
-            }          
+            //         // Payment cancelled by WebKit
+            //     };
+            // }
+            // catch(error){
+            //     console.log("On Cancel Error: " + error)
+            // }          
         },
         setupApplePay: function () {
             var merchantIdentifier = ecngApplePay.applePay.getMerchantIdentifier();
