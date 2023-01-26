@@ -285,6 +285,7 @@ ecngApplePay = {
         // .catch(err => {
         //    console.error("Error fetching merchant session", err);
         // });
+        console.log("onvalidatemerchant try fetch URL complete");
         };    
         console.log("onvalidatemerchant try complete");
     }
@@ -320,23 +321,26 @@ ecngApplePay = {
             session.onshippingmethodselected = event => {
                 // Define ApplePayShippingMethodUpdate based on the selected shipping method.
                 // No updates or errors are needed, pass an empty object. 
+                console.log("onshippingmethodselected start");
                 const update = {};
                 session.completeShippingMethodSelection(update);
-                console.log("onshippingmethodselected");
+                console.log("onshippingmethodselected end");
             };
 
             session.onshippingcontactselected = event => {
                 // Define ApplePayShippingContactUpdate based on the selected shipping contact.
+                console.log("onshippingcontactselected start");
                 const update = {};
                 session.completeShippingContactSelection(update);
-                console.log("onshippingcontactselected");
+                console.log("onshippingcontactselected end");
             };
 
             session.onshippingcontactselected = event => {
                 // Define ApplePayShippingContactUpdate based on the selected shipping contact.
+                console.log("onshippingcontactselected start");
                 const update = {};
                 session.completeShippingContactSelection(update);
-                console.log("onshippingcontactselected");
+                console.log("onshippingcontactselected end");
             };            
             
             try{
