@@ -314,6 +314,10 @@ ecngApplePay = {
                 session.completePayment(result);
                 ecngApplePay.applePay.processPayment(token); 
             };
+
+            session.oncancel = function(event) {              
+                // Payment cancelled by WebKit
+            };            
             /*
             try{
                 console.log("On Payment Authorized try")
