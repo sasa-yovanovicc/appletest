@@ -242,6 +242,7 @@ ecngApplePay = {
             
    
             // Merchant Validation
+            session.onvalidatemerchant = function (event) {
             console.log("onvalidatemerchant validationURL "+event.validationURL)
             fetch(event.validationURL)                
                 .then(res => res.json()) // Parse response as JSON.        
@@ -251,7 +252,7 @@ ecngApplePay = {
                 .catch(err => {
                     console.error("Error fetching merchant session", err);
                 });
-        
+            };
 
             // Setup handler for shipping method selection.
             session.onshippingmethodselected = event => {
