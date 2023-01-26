@@ -225,7 +225,7 @@ ecngApplePay = {
             var paymentRequest = {
                 applicationData: btoa("Custom application-specific data"),
                 countryCode: "IL",
-                currencyCode: "@Model.Currency",
+                currencyCode: "USD",
                 merchantCapabilities: [ "supports3DS" ],
                 supportedNetworks: [ "visa", "masterCard", "amex", "discover" ],
                 lineItems: [{ label: "Total", amount: "1.23" }],
@@ -233,7 +233,7 @@ ecngApplePay = {
             };
 /*
             var countryCode = "IL"";
-            var currencyCode = "@Model.Currency";
+            var currencyCode = "USD";
             var storeName = "Test ECNG";
 
 
