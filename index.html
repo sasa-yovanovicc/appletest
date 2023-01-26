@@ -1,0 +1,321 @@
+<html>
+    <head></head>
+    <body>
+<form action="Charge" method="post" id="applepay-form">
+
+    <input type="hidden" for="RedirectUrl" />
+    <input type="hidden" for="PaymentRequest" />
+    <input type="hidden" for="PaymentIntent"  />
+    <input type="hidden" for="ApiKey"  />
+    <input type="hidden" for="Currency" />
+    <input type="hidden" for="Description"  />
+    <input type="hidden" for="IssueInvoice"  />
+    <input type="hidden" for="PayWithBit"  />
+    <input type="hidden" for="Origin"  />
+
+    <input type="hidden" for="ApplePaymentToken" id="ApplePaymentToken" />
+    <input type="hidden" for="PayWithApplePay" id="PayWithApplePay" value="true" />
+
+   
+    <div class="button-group d-flex payment-panel_button-group__apple" >
+
+        <div id="container" class="applepay-button-container" >            
+
+            <div id="set-up-apple-pay-button" class="apple-pay apple-pay-set-up-button apple-pay-set-up-button-black input-block-level d-none" lang="en"></div>
+
+            <div id="apple-pay-button" class="apple-pay input-block-level d-none" lang="en"></div>
+        </div>
+        <button class="btn btn-outline-danger applepay-cancel-button" id="applepay-cancel-btn" >
+            CancelPayment
+        </button>
+
+    </div>
+</form>
+
+<div class="alert alert-warning apple-pay-error col d-none" role="alert"></div>
+<script nws-csp-add-nonce="true">
+    var _applePayAvailable = function () {
+        return window.ApplePaySession && ApplePaySession.canMakePayments()
+    }
+
+    if (!_applePayAvailable()) {
+        document.getElementById("applepay-form").style.display = "none";
+    }
+</script>    
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script nws-csp-add-nonce="true">
+if (typeof $ === "function") {
+    console.log("jQuery is loaded.");
+  } else {
+    console.log("jQuery is not loaded.");
+  }
+  
+ecngApplePay = {
+    applePay: {
+        // Function to handle payment when the Apple Pay button is clicked/pressed.
+        beginPayment: function (e) {
+
+        e.preventDefault(); 
+
+            // Create the Apple Pay payment request as appropriate.
+            var paymentRequest = {
+                applicationData: btoa("Custom application-specific data"),
+                countryCode: "IL",
+                currencyCode: "@Model.Currency",
+                merchantCapabilities: [ "supports3DS" ],
+                supportedNetworks: [ "visa", "masterCard", "amex", "discover" ],
+                lineItems: [{ label: "Total", amount: "1.23" }],
+                total: { label: "Total", amount: "1.23", type: "final" }
+            };
+/*
+            var countryCode = "IL"";
+            var currencyCode = "@Model.Currency";
+            var storeName = "Test ECNG";
+
+
+            var totalForCollection = {
+                label: storeName,
+                amount: subtotal
+            };
+
+            var lineItemsForCollection = [
+                { label: "Subtotal", amount: subtotal, type: "final" }
+            ];
+
+            var totalForDelivery = {
+                label: storeName,
+                amount: deliveryTotal
+            };
+
+            var lineItemsForDelivery = [
+                { label: "Subtotal", amount: subtotal, type: "final" },
+                { label: "Delivery", amount: delivery, type: "final" }
+            ];*/
+
+            // Create the Apple Pay session.
+            console.log("ApplePaySession request "+paymentRequest.total.amount);
+            var session = new ApplePaySession(3, paymentRequest);
+
+            // Setup handler for validation the merchant session.
+      /*      
+    session.onvalidatemerchant = async event => {
+        // Call your own server to request a new merchant session.
+        console.log("onvalidatemerchant");
+        const merchantSession = await validateMerchant();
+        console.log("onvalidatemerchant complete"");
+        session.completeMerchantValidation(merchantSession);
+        console.log("completeMerchantValidation complete");
+    };
+    */
+    try {
+        session.onvalidatemerchant = event => {
+        // Call your own server to request a new merchant session.
+        console.log("onvalidatemerchant validatioURL "+event.validationURL)
+        fetch(event.validationURL)
+        .then(r => {res => r.json(); console.log("res "+res);}) // Parse response as JSON.
+        .then(merchantSession => {
+            console.log("Merchant session: " + merchantSession);
+            session.completeMerchantValidation(merchantSession);
+        });
+        /*.catch(err => {
+            console.error("Error fetching merchant session", err);
+        });
+*/
+        };    
+    }
+    catch(e) {
+        console.log("onvalidatemerchant error "+e);
+    }
+
+/*
+            session.onvalidatemerchant = function (event) {
+  
+                // Create the payload.
+                var data = {
+                    validationUrl: event.validationURL
+                };
+
+                var headers = {};
+
+                // Post the payload to the server to validate the
+                // merchant session using the merchant certificate.
+                $.ajax({
+                    url: "Home/ValidateAppleMerchant",
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(data),
+                    headers: headers
+                }).then(function (merchantSession) {
+                    // Complete validation by passing the merchant session to the Apple Pay session.
+                    session.completeMerchantValidation(merchantSession);
+                }); 
+            };
+*/
+            // Setup handler for shipping method selection.
+            session.onshippingmethodselected = event => {
+                // Define ApplePayShippingMethodUpdate based on the selected shipping method.
+                // No updates or errors are needed, pass an empty object. 
+                const update = {};
+                session.completeShippingMethodSelection(update);
+            };
+
+            session.onshippingcontactselected = event => {
+                // Define ApplePayShippingContactUpdate based on the selected shipping contact.
+                const update = {};
+                session.completeShippingContactSelection(update);
+            };
+
+            session.onshippingcontactselected = event => {
+                // Define ApplePayShippingContactUpdate based on the selected shipping contact.
+                const update = {};
+                session.completeShippingContactSelection(update);
+            };            
+            
+            try{
+                // Setup handler to receive the token when payment is authorized.
+                session.onpaymentauthorized = function (event) {
+
+                    // Get the payment data for use to capture funds from
+                    // the encrypted Apple Pay token in your server.
+                    var token = event.payment.token.paymentData;
+                    // var paymentData = token.paymentData;
+                    // var paymentMethod = token.paymentMethod;
+                    // var transactionIdentifier = token.transactionIdentifier;
+                    
+                    var authorizationResult = {
+                        status: ApplePaySession.STATUS_SUCCESS,
+                        errors: []
+                    };
+
+                    session.completePayment(authorizationResult);
+
+                    ecngApplePay.applePay.processPayment(token);
+                };
+
+                // Start the session to display the Apple Pay sheet.
+                session.begin(); 
+
+            }
+            catch(error){
+                console.log("On Payment Authorized Error: " + error)
+            }
+
+            try{
+                session.oncancel = function(event) {
+                    console.log("starting session.oncancel" + JSON.stringify(event));
+                    console.log(session);
+
+                    // Payment cancelled by WebKit
+                };
+            }
+            catch(error){
+                console.log("On Cancel Error: " + error)
+            }          
+        },
+        setupApplePay: function () {
+            var merchantIdentifier = ecngApplePay.applePay.getMerchantIdentifier();
+            ApplePaySession.openPaymentSetup(merchantIdentifier)
+                .then(function (success) {
+                    if (success) {
+                        ecngApplePay.applePay.hideSetupButton();
+                        ecngApplePay.applePay.showButton();
+                    } else {
+                        ecngApplePay.applePay.showError("Failed to set up Apple Pay.");
+                    }
+                }).catch(function (e) {
+                    ecngApplePay.applePay.showError("Failed to set up Apple Pay. " + e);
+                });
+        },
+        showButton: function () {
+            var button = $("#apple-pay-button");
+            button.attr("lang", "en");
+            button.on("click", ecngApplePay.applePay.beginPayment);
+
+            if (ecngApplePay.applePay.supportsSetup()) {
+                console.log("supports setup");
+                button.addClass("apple-pay-button-with-text");
+                button.addClass("apple-pay-button-black-with-text");
+            } else {
+                console.log("show pay button");
+                button.addClass("apple-pay-button");
+                button.addClass("apple-pay-button-black");
+            }
+
+            button.removeClass("d-none");
+            console.log("showButton");
+        },
+        showSetupButton: function () {
+            var button = $("#set-up-apple-pay-button");
+            button.attr("lang", "en");
+            button.on("click", $.proxy(ecngApplePay.applePay, "setupApplePay"));
+            console.log("showSetupButton");
+            button.removeClass("d-none");
+        },
+        hideSetupButton: function () {
+            var button = $("#set-up-apple-pay-button");
+            button.addClass("d-none");
+            button.off("click");
+            console.log("hideSetupButton");
+        },
+        showError: function (text) {
+            var error = $(".apple-pay-error");
+            error.text(text);
+            error.removeClass("d-none");
+        },
+        supportedByDevice: function () {
+            return "ApplePaySession" in window;
+        },
+        supportsSetup: function () {
+            return "openPaymentSetup" in ApplePaySession;
+        },
+        getMerchantIdentifier: function () {            
+            return "@Model.AppleMerchantId";  
+        },
+        processPayment: function (token) {
+            $("#ApplePaymentToken").val(token);
+            $("#applepay-form").submit();
+        }
+    }
+};
+
+(function () {
+
+    // Get the merchant identifier from the page meta tags.
+    var merchantIdentifier = ecngApplePay.applePay.getMerchantIdentifier();
+
+    if (!merchantIdentifier) {
+        console.log("No Apple Pay merchant certificate is configured.");
+        ecngApplePay.applePay.showError("No Apple Pay merchant certificate is configured.");
+    }
+    // Is ApplePaySession available in the browser?
+    else if (ecngApplePay.applePay.supportedByDevice()) {
+        console.log("Apple Pay merchant certificate is configured and device is supported.");
+        // Determine whether to display the Apple Pay button. See this link for details
+        // on the two different approaches: https://developer.apple.com/documentation/applepayjs/checking_if_apple_pay_is_available
+        if (ApplePaySession.canMakePayments() === true) {
+            console.log("Can make payments");
+            ecngApplePay.applePay.showButton();
+        } else {
+            ApplePaySession.canMakePaymentsWithActiveCard(merchantIdentifier).then(function (canMakePayments) {
+                if (canMakePayments === true) {
+                    ecngApplePay.applePay.showButton();
+                } else {
+                    if (ecngApplePay.applePay.supportsSetup()) {
+                        ecngApplePay.applePay.showSetupButton(merchantIdentifier);
+                    } else {
+                        console.log("Apple Pay cannot be used at this time. If using macOS you need to be paired with a device that supports at least TouchID.");
+                        ecngApplePay.applePay.showError("Apple Pay cannot be used at this time. If using macOS you need to be paired with a device that supports at least TouchID.");
+                    }
+                }
+            });
+        }
+    } else {
+        console.log("This device and/or browser does not support Apple Pay.");
+        ecngApplePay.applePay.showError("This device and/or browser does not support Apple Pay.");
+    }
+})();
+
+</script>
+<script src="https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js"></script>
+</body>
+</html>
