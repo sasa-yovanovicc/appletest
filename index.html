@@ -277,6 +277,8 @@ ecngApplePay = {
         // Call your own server to request a new merchant session.
         console.log("onvalidatemerchant validationURL "+event.validationURL)
         fetch(event.validationURL)
+        .then(console.log("fetch URL then 1"))
+        .then(console.log(r))
         .then(r => {res => r.json(); console.log("res "+res);}) // Parse response as JSON.
         .then(merchantSession => {
             console.log("Merchant session: " + merchantSession);
